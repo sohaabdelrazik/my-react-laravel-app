@@ -8,6 +8,8 @@ use App\Models\Charity;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Validator;
+header("Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT, DELETE");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
 class CharitiesController extends Controller
 {  public function register(Request $request){
 
