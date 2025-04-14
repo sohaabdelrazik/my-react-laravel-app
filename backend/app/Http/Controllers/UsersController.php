@@ -18,6 +18,10 @@ class UsersController extends Controller
             'name'=>'required|string|max:255',
             'email'=>'required|email|unique:users,email',
             'password'=>'required|string|max:12|min:8',
+            'gender'=>'required|in:Female,Male',
+            'age'=>'required|integer',
+           'rate'=>'numeric',
+
         ]);
         if($validator->fails()){
             return response()->json(['errors'=>$validator->errors()],422);}
@@ -25,6 +29,9 @@ class UsersController extends Controller
         $user=User::create([
             'name'=>$request->name,
             'email'=>$request->email,
+            'age'=>$request->age,
+            'gender'=>$request->gender,
+            'rate'=>$request->rate,
             'password'=>Hash::make($request->password),
         ]);
         $token=JWTAuth::fromUser($user);
@@ -93,4 +100,17 @@ class UsersController extends Controller
 
                 
                     }  
+        public function profile( $name){
+            $userAuth=auth('user')->user();
+            $charity=auth('charity')->user();
+             if (!$userAuth&&!$charity){
+                return response()->json(['error'=>'unauthorized'],401);
+             }
+             $user=User::where('name',$name)->first();
+             if(!$user){
+                return response()->json(['error'=>'user not found'],404);
+             }
+             return response()->json(['message'=>'User Profile',
+             'user'=>$user->makeHidden(['password','id'])]);
+        }
 }

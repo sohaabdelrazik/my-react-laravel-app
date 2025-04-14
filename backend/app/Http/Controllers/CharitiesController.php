@@ -101,5 +101,17 @@ class CharitiesController extends Controller
 
                 
                     }  
+        public function profile($name){
+            $charityAuth = auth('charity')->user();
+            $user = auth('user')->user();
+            if(!$charityAuth&&!$user){
+                return response()->json(['error'=>'unauthorized'],401);
+            }
+            $charity=Charity::where('name',$name)->first();
+            if(!$charity){
+                return response()->json(['error'=>'charity not found']);
+            }
+            return response()->json(['message'=>'charity profile','charity'=>$charity->makeHidden(['password','id'])]);
+        }
 }
 
