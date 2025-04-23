@@ -27,6 +27,7 @@ class Charity extends Authenticatable implements JWTSubject
         'specialty',
         'address',
         'password',
+        'mobile_number'
     ];
 
     /**

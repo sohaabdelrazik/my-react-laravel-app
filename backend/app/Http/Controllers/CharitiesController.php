@@ -19,6 +19,7 @@ class CharitiesController extends Controller
             'description'=>'required|max:1600',
             'specialty'=>'required|max:100',
             'password'=>'required|string|max:12|min:8',
+            'mobile_number'=>'required|string|min:11|max:11'
         ]);
         if($validator->fails()){
             return response()->json(['errors'=>$validator->errors()],422);}
@@ -29,6 +30,7 @@ class CharitiesController extends Controller
             'description'=>$request->description,
             'specialty'=>$request->specialty,
             'password'=>Hash::make($request->password),
+            'mobile_number'=>$request->mobile_number
         ]);
         $token=JWTAuth::fromUser($charity);
         return response()->json(['message'=>'Charity Registered successfully','charity'=>$charity,'token'=>$token],201);

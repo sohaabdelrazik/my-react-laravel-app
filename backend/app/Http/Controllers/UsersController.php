@@ -21,6 +21,7 @@ class UsersController extends Controller
             'gender'=>'required|in:Female,Male',
             'age'=>'required|integer',
            'rate'=>'numeric',
+           'mobile_number'=>'required|string|min:11|max:11'
 
         ]);
         if($validator->fails()){
@@ -33,6 +34,8 @@ class UsersController extends Controller
             'gender'=>$request->gender,
             'rate'=>$request->rate,
             'password'=>Hash::make($request->password),
+            'mobile_number'=>$request->mobile_number
+
         ]);
         $token=JWTAuth::fromUser($user);
         return response()->json(['message'=>'User Registered','user'=>$user,'token'=>$token],201);

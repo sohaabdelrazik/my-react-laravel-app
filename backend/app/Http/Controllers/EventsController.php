@@ -90,20 +90,36 @@ public function eventsByCharityName($charityName)
     }
     public function listInterestedEvents()
     {
-        $user = auth('user')->user();
+        $user=auth('user')->user();
+        if(!$user){
+            return response()->json(['error'=>'no token provided or expired'],401);
+        }
         $userEvents=DB::table('event_user')->where('user_id',$user->id)
         ->where('state','interested')->
         pluck('event_id');
         $eventsList=Event::whereIn('id',$userEvents)->get();
-        return response()->json($eventsList);
+        return response()->json($eventsList->makeHidden(['id','charity_id']));
     }
-
+//going events in going_events_page in user dashboard
     public function listGoingEvents()
     {
         $user = auth('user')->user();
+        if(!$user){
+            return response()->json(['error'=>'no token provided or expired'],401);
+        }
         $userEvents=DB::table('event_user')->where('user_id',$user->id)
-        ->where('state','going_to')->get();
-        return response()->json($userEvents);       
+        ->where('state','going_to')->pluck('event_id');
+        $eventList=Event::whereIn('id',$userEvents)->get();
+        return response()->json($eventList->makeHidden(['id','charity_id']));       
+    }
+    public function listGoingUsers($eventId){
+        $charity=auth('charity')->user();
+        if(!$charity){
+            return response()->json(['error'=>'unauthorized'],401);
+        }
+        $userIdList=DB::table('event_user')->where('event_id',$eventId)->pluck('user_id');
+        $user=User::whereIn('id',$userIdList)->pluck('name');
+        return response()->json($user);
     }
     public function updateUserRate($userId){
         $verifiedEvents=DB::table('event_user_verified')
@@ -130,7 +146,11 @@ public function eventsByCharityName($charityName)
         return response()->json(['message'=>'Event marked as interested'],200);
     }
     public function markUserGoingToEvent($eventId)
-    {   $event=Event::where('id',$eventId)->first();
+    {    $user=auth('user')->user();
+        if(!$user){
+            return response()->json(['error'=>'no token provided or expired'],401);
+        }
+         $event=Event::where('id',$eventId)->first();
         if(!$event)
         {
            return response()->json(['error'=>'event not exist'],404);

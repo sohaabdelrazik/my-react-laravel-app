@@ -49,6 +49,8 @@ Route::middleware(['auth:charity'])->delete('/event/destroy/{id}', [EventsContro
 Route::middleware('auth:user')->group(function () {
     Route::post('/events/{eventId}/interest', [EventsController::class, 'markUserInterestedEvent']);
     Route::post('/events/{eventId}/going', [EventsController::class, 'markUserGoingToEvent']);
-    Route::get('/events/interested', [EventsController::class, 'listInterestedEvents']);
-    Route::get('/events/going', [EventsController::class, 'listGoingEvents']);
+    Route::post('/events/interested', [EventsController::class, 'listInterestedEvents']);
+    Route::post('/events/going', [EventsController::class, 'listGoingEvents']);
 });
+Route::get('/going/{eventId}/users', [EventsController::class, 'listGoingUsers']);
+

@@ -14,6 +14,7 @@ return new class extends Migration {
             $table->integer('age')->nullable();
             $table->decimal('rate', 5, 2)->nullable();
             $table->enum('gender', ['Male', 'Female']);
+            $table->string('mobile_number',15);
             $table->rememberToken();
             $table->timestamps();
         });
@@ -26,6 +27,7 @@ return new class extends Migration {
             $table->string('specialty');
             $table->string('address')->nullable();
             $table->string('password');
+            $table->string('mobile_number',15);
             $table->rememberToken();
             $table->timestamps();
         });
