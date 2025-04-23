@@ -49,6 +49,7 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('event_id')->constrained('events')->onDelete('cascade');
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('charity_id')->constrained('charities')->onDelete('cascade');
             $table->text('content');
             $table->timestamps();
         });
