@@ -12,7 +12,10 @@ class comment extends Model
     protected $fillable=[
         'user_id',
         'event_id',
-        'content'
+        'charity_id',
+        'content',
+        'charity_name',
+        'user_name'
     ];
 
 }

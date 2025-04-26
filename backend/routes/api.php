@@ -23,24 +23,19 @@ Route::post('/register',[UsersController::class,'register']);
 Route::post('/login',[UsersController::class,'login']);
 Route::get('/dashboard',[UsersController::class,'dashboard']);
 Route::get('/logout',[UsersController::class,'logout']);
+Route::get('/profile/name/{name}', [UsersController::class, 'profile']);
+
 Route::post('/charity/register',[CharitiesController::class,'register']);
 Route::post('/charity/login',[CharitiesController::class,'login']);
 Route::get('/charity/dashboard',[CharitiesController::class,'dashboard']);
 Route::get('/charity/logout',[CharitiesController::class,'logout']);
 Route::get('/charity/profile/name/{name}', [CharitiesController::class, 'profile']);
-Route::get('/profile/name/{name}', [UsersController::class, 'profile']);
-Route::middleware(['auth:charity'])->group(function () {
-    Route::apiResource('events', EventsController::class);
-});
-Route::middleware(['auth:user'])->group(function () {
-    Route::apiResource('comments', CommentsController::class,['store']);
-});
-Route::middleware(['auth:user'])->group(function () {
-    Route::post('/dashboard/comments/store', [CommentsController::class,'store']);
-});
-Route::middleware(['auth:charity'])->group(function () {
-    Route::get('/my-events', [EventsController::class, 'myEvents']);
-});
+
+Route::get('/show/{eventId}/comments', [CommentsController::class,'show']);
+Route::delete('/comment/destroy/{id}', [CommentsController::class, 'destroy']);
+Route::post('/create/comment', [CommentsController::class, 'store']);
+
+Route::middleware(['auth:charity'])->get('/my-events', [EventsController::class, 'myEvents']);
 Route::post('/events/{eventId}/verified', [EventsController::class, 'verifyUserAttendance']);
 Route::get('/all-events', [EventsController::class, 'allEvents']);
 Route::middleware(['auth:user'])->get('/charity-events/{charityName}', [EventsController::class, 'eventsByCharityName']);
@@ -50,7 +45,6 @@ Route::middleware('auth:user')->group(function () {
     Route::post('/events/{eventId}/interest', [EventsController::class, 'markUserInterestedEvent']);
     Route::post('/events/{eventId}/going', [EventsController::class, 'markUserGoingToEvent']);
     Route::post('/events/interested', [EventsController::class, 'listInterestedEvents']);
-    Route::post('/events/going', [EventsController::class, 'listGoingEvents']);
-});
+    Route::post('/events/going', [EventsController::class, 'listGoingEvents']);});
 Route::get('/going/{eventId}/users', [EventsController::class, 'listGoingUsers']);
 
