@@ -1,8 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-header("Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT, DELETE");
-header("Access-Control-Allow-Headers: Content-Type, Authorization");
+
 
 use Hash;
 use Illuminate\Http\Request;
