@@ -22,8 +22,8 @@ class EventsController extends Controller
     if(!$user&&!$charity){
         return response()->json(['error'=>'unauthorized'],401);
     }
-    $events = Event::all();
-    return response()->json($events->makeHidden(['id','charity_id']));
+    $events = Event::orderByDesc('id')->get()->makeHidden(['id','charity_id']);
+    return response()->json(["events"=>$events],201);
 }
 public function eventsByCharityName($charityName)
 {
@@ -33,9 +33,9 @@ public function eventsByCharityName($charityName)
         return response()->json(['error' => 'Charity not found'], 404);
     }
 
-    $events = Event::where('charity_id', $charity->id)->get();
+    $events = Event::where('charity_id', $charity->id)->orderByDesc('id')->get();
 
-    return response()->json($events->makeHidden(['id','charity_id']));
+    return response()->json(["events"=>$events->makeHidden(['id','charity_id'])],201);
 }
     public function myEvents()
 {
@@ -45,7 +45,7 @@ public function eventsByCharityName($charityName)
         return response()->json(['error' => 'Unauthorized'], 401);
     }
 
-    $events = Event::where('charity_id', $charity->id)->get();
+    $events = Event::where('charity_id', $charity->id)->orderByDesc('id')->get();
 
     return response()->json($events->makeHidden(['id','charity_id']));
 }   /**
@@ -69,8 +69,8 @@ public function eventsByCharityName($charityName)
             'description'=>'string|required|max:1000',
             'due_date'=>'date|required',
             'priority'=>'nullable|in:Low,Medium,High',
-            'category'=>'string|required|max:255',
-            'status'=>'required|string'
+            'category'=>'string|required|max:255'
+            
         ]);
         if($validator->fails()){
             return response()->json(['error'=>$validator->errors()],422);
@@ -83,8 +83,7 @@ public function eventsByCharityName($charityName)
             'description'=>$request->description,
             'due_date'=>$request->due_date,
             'priority'=>$request->priority,
-            'category'=>$request->category,
-            'status'=>$request->status
+            'category'=>$request->category
         ]);
         return response()->json(['message'=>'Event created successfully','event'=>$event->makeHidden(['charity_id'])],200);
     }
@@ -95,9 +94,9 @@ public function eventsByCharityName($charityName)
             return response()->json(['error'=>'no token provided or expired'],401);
         }
         $userEvents=DB::table('event_user')->where('user_id',$user->id)
-        ->where('state','interested')->
-        pluck('event_id');
-        $eventsList=Event::whereIn('id',$userEvents)->get();
+        ->where('state','interested')
+        ->pluck('event_id');
+        $eventsList=Event::whereIn('id',$userEvents)->orderByDesc('id')->get();
         return response()->json($eventsList->makeHidden(['id','charity_id']));
     }
 //going events in going_events_page in user dashboard
@@ -109,7 +108,7 @@ public function eventsByCharityName($charityName)
         }
         $userEvents=DB::table('event_user')->where('user_id',$user->id)
         ->where('state','going_to')->pluck('event_id');
-        $eventList=Event::whereIn('id',$userEvents)->get();
+        $eventList=Event::whereIn('id',$userEvents)->orderByDesc('id')->get();
         return response()->json($eventList->makeHidden(['id','charity_id']));       
     }
     public function listGoingUsers($eventId){
