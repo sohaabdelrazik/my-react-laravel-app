@@ -39,12 +39,12 @@ Route::middleware(['auth:charity'])->get('/my-events', [EventsController::class,
 Route::post('/events/{eventId}/verified', [EventsController::class, 'verifyUserAttendance']);
 Route::get('/all-events', [EventsController::class, 'allEvents']);
 Route::middleware(['auth:user'])->get('/charity-events/{charityName}', [EventsController::class, 'eventsByCharityName']);
-Route::middleware(['auth:charity'])->post('/charity/events', [EventsController::class, 'store']);
+Route::middleware(['auth:charity'])->post('/charity/create/event', [EventsController::class, 'store']);
 Route::middleware(['auth:charity'])->delete('/event/destroy/{id}', [EventsController::class, 'destroy']);
 Route::middleware('auth:user')->group(function () {
     Route::post('/events/{eventId}/interest', [EventsController::class, 'markUserInterestedEvent']);
     Route::post('/events/{eventId}/going', [EventsController::class, 'markUserGoingToEvent']);
-    Route::post('/events/interested', [EventsController::class, 'listInterestedEvents']);
-    Route::post('/events/going', [EventsController::class, 'listGoingEvents']);});
+    Route::post('/events/interestedList', [EventsController::class, 'listInterestedEvents']);
+    Route::post('/events/goingList', [EventsController::class, 'listGoingEvents']);});
 Route::get('/going/{eventId}/users', [EventsController::class, 'listGoingUsers']);
 

@@ -12,7 +12,6 @@ class event extends Model
     protected $fillable=[
         'charity_id',
         'charity_name',
-        'id',
         'title',
         'description',
         'due_date',
