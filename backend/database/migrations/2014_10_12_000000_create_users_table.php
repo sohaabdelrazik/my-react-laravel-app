@@ -42,6 +42,8 @@ return new class extends Migration {
             $table->enum('priority', ['Low', 'Medium', 'High'])->nullable();
             $table->string('category')->nullable();
             $table->string('status')->nullable();
+            $table->string('location')->nullable();
+
             $table->timestamps();
         });
 

@@ -69,7 +69,8 @@ public function eventsByCharityName($charityName)
             'description'=>'string|required|max:1000',
             'due_date'=>'date|required',
             'priority'=>'nullable|in:Low,Medium,High',
-            'category'=>'string|required|max:255'
+            'category'=>'string|required|max:255',
+            'location'=>'string|nullable'
             
         ]);
         if($validator->fails()){
@@ -83,7 +84,8 @@ public function eventsByCharityName($charityName)
             'description'=>$request->description,
             'due_date'=>$request->due_date,
             'priority'=>$request->priority,
-            'category'=>$request->category
+            'category'=>$request->category,
+            'location'=>$request->location
         ]);
         return response()->json(['message'=>'Event created successfully','event'=>$event->makeHidden(['charity_id'])],200);
     }

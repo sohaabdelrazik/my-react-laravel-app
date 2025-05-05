@@ -17,7 +17,8 @@ class event extends Model
         'due_date',
         'priority',
         'category',
-        'status'
+        'status',
+        'location'
     ];
     
 }
