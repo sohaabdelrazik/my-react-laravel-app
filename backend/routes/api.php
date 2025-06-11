@@ -31,9 +31,11 @@ Route::get('/charity/dashboard',[CharitiesController::class,'dashboard']);
 Route::get('/charity/logout',[CharitiesController::class,'logout']);
 Route::get('/charity/profile/name/{name}', [CharitiesController::class, 'profile']);
 
-Route::get('/show/{eventId}/comments', [CommentsController::class,'show']);
+Route::get('/show/{eventId}/comments', [CommentsController::class,'showAll']);
 Route::delete('/comment/destroy/{id}', [CommentsController::class, 'destroy']);
 Route::post('/create/comment', [CommentsController::class, 'store']);
+Route::put('/update/comment/{id}', [CommentsController::class, 'update']);
+Route::get('/show/comment/{id}', [CommentsController::class,'show']);
 
 Route::middleware(['auth:charity'])->get('/my-events', [EventsController::class, 'myEvents']);
 Route::post('/events/{eventId}/verified', [EventsController::class, 'verifyUserAttendance']);
@@ -47,4 +49,6 @@ Route::middleware('auth:user')->group(function () {
     Route::post('/events/interestedList', [EventsController::class, 'listInterestedEvents']);
     Route::post('/events/goingList', [EventsController::class, 'listGoingEvents']);});
 Route::get('/going/{eventId}/users', [EventsController::class, 'listGoingUsers']);
+Route::put('/update/event/{id}', [EventsController::class, 'update']);
+Route::get('/show/event/{id}', [EventsController::class,'show']);
 

@@ -89,6 +89,51 @@ public function eventsByCharityName($charityName)
         ]);
         return response()->json(['message'=>'Event created successfully','event'=>$event->makeHidden(['charity_id'])],200);
     }
+    public function show($id){
+        $charity=auth('charity')->user();
+        if(!$charity){
+            return response()->json(['error'=>'unauthorized'],422);
+        }
+        $event=Event::find($id);
+        if(!$event){
+            return response()->json(['error'=>'event not found'],404);
+
+        }
+        return response()->json([$event],201);
+
+    }
+    public function update(Request $request,$id){
+        $charity=auth('charity')->user();
+        if(!$charity){
+            return response()->json(['error'=>'unauthorized'],422);
+        }
+        $event=Event::find($id);
+        if(!$event){
+         return response()->json(['error'=>'event not found'],404);
+        }
+       else if($charity&&$event->charity_id!=$charity->id){
+        return response()->json(['error'=>'not your event'],422);
+       }
+      
+       $request->validate([
+        'title'=>'string|required|max:250',
+        'description'=>'string|required|max:1000',
+        'due_date'=>'date|required',
+        'priority'=>'nullable|in:Low,Medium,High',
+        'category'=>'string|required|max:255',
+        'location'=>'string|nullable'
+       ]);
+       $event->update([
+        'title'=>$request->title,
+        'description'=>$request->description,
+        'due_date'=>$request->due_date,
+        'priority'=>$request->priority,
+        'category'=>$request->category,
+        'location'=>$request->location
+       ]);
+       return response()->json(['message'=>'event updated successfully']);
+
+    }
     public function listInterestedEvents()
     {
         $user=auth('user')->user();
@@ -118,8 +163,12 @@ public function eventsByCharityName($charityName)
         if(!$charity){
             return response()->json(['error'=>'unauthorized'],401);
         }
-        $userIdList=DB::table('event_user')->where('event_id',$eventId)->pluck('user_id');
-        $user=User::whereIn('id',$userIdList)->pluck('name');
+        $userIdList=DB::table('event_user')
+        ->where('event_id',$eventId)
+        ->where('state','going_to')
+        ->pluck('user_id');
+        $user=User::whereIn('id',$userIdList)
+        ->pluck('name');
         return response()->json($user);
     }
     public function updateUserRate($userId){

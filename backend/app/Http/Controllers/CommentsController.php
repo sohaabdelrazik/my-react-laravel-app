@@ -34,10 +34,6 @@ class CommentsController extends Controller
         $validator=Validator::make($request->all(),[
             'content'=>'string',
             'event_id'=>'exists:events,id',
-            'user_id'=>'exists:users,id|nullable',
-            'charity_id'=>'exists:charities,id|nullable',
-            'user_name'=>'string|nullable',
-            'charity_name'=>'string|nullable'
 
         ]);
         if($validator->fails()){
@@ -63,7 +59,7 @@ class CommentsController extends Controller
     }
     return response()->json(['error'=>'unauthorized'],422);
 }
-    public function show($eventId){
+    public function showAll($eventId){
         $user=auth('user')->user();
         $charity=auth('charity')->user();
         if(!$charity&&!$user){
@@ -83,6 +79,51 @@ class CommentsController extends Controller
         'comments'=>$commentList],201);
     }
 
+    public function show($id){
+        $charity=auth('charity')->user();
+        $user=auth('user')->user();
+
+        if(!$charity&&!$user){
+            return response()->json(['error'=>'unauthorized'],422);
+        }
+        else if($charity&&$user){
+            return response()->json(['error'=>'overwrite'],422);
+        }
+        $comment=Comment::find($id);
+        if(!$comment){
+            return response()->json(['error'=>'comment not found'],404);
+
+        }
+        return response()->json([$comment],201);
+
+    }
+    public function update(Request $request,$id){
+        $charity=auth('charity')->user();
+        $user=auth('user')->user();
+        if(!$user&&!$charity){
+            return response()->json(['error'=>'unauthorized'],422);
+        }
+        $comment=Comment::find($id);
+        if(!$comment){
+            return response()->json(['error'=>'comment not found'],422);
+
+        }
+        if($user&&$comment->user_id!=$user->id){
+            return response()->json(['error'=>'not your comment'],422);
+
+        }
+        if($charity&&$comment->charity_id!=$charity->id){
+            return response()->json(['error'=>'not your comment'],422);
+
+        }
+        $request->validate([
+            "content"=>"string|required"
+        ]);
+        $comment->update([
+            "content"=>$request->content
+        ]);
+        return response()->json(['message'=>'comment updated successfully']);
+    }
     public function destroy($id)
     {
         $charity=auth('charity')->user();
