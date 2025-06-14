@@ -15,6 +15,51 @@ class EventsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    public function blockUser($userId){
+        $charity=auth('charity')->user();
+        if(!$charity){
+            return response()->json(['error'=>'unauthorized'],403);
+        }
+        $user=User::findOrFail($userId);
+        $findIfExist=DB::table('blockings')->where('user_id',$userId)
+        ->where('charity_id',$charity->id)
+        ->exists(); 
+        if($findIfExist){
+            return response()->json(['message'=>'user already blocked'],409);
+        }
+        DB::table('blockings')->insert([
+            'user_id' => $userId,
+            'user_name' => $user->name,
+            'charity_id' => $charity->id,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        return response()->json(['message'=>'user blocked successfully'],201);
+    }
+    public function unblockUser($userId){
+        $charity=auth('charity')->id();
+        if(!$charity){
+            return response()->json(['error'=>'unauthorized'],403);
+        }
+        $blockedUser=DB::table('blockings')
+        ->where('user_id',$userId)
+        ->where('charity_id',$charity)->first();
+        if(!$blockedUser){
+            return response()->json(['error'=>'user unblocked already!!'],404);
+        }
+        $deleted=DB::table('blockings')
+        ->where('user_id',$userId)
+        ->where('charity_id',$charity)->delete();
+        return response()->json(['message'=>'user unblocked'],201);
+
+    }
+    public function blocked($charityId,$userId){
+        return DB::table('blockings')
+        ->where('user_id',$userId)
+        ->where('charity_id',$charityId)
+        ->exists();
+         
+    }
     public function allEvents()
 {
     $charity=auth('charity')->user();
@@ -28,7 +73,12 @@ class EventsController extends Controller
 public function eventsByCharityName($charityName)
 {
     $charity = Charity::where('name', $charityName)->first();
+    $user=auth('user')->user();
+    $block=$this->blocked($charity->id,$user->id);
+    if($block){
+        return response()->json(['message'=>'access denial'],403);
 
+    }
     if (!$charity) {
         return response()->json(['error' => 'Charity not found'], 404);
     }
@@ -191,6 +241,11 @@ public function eventsByCharityName($charityName)
            return response()->json(['error'=>'event not exist'],404);
         }
         $userId=auth('user')->id();
+        $block=$this->blocked($event->charity_id,$userId);
+        if($block){
+            return response()->json(['message'=>'access denial'],403);
+    
+        }
         DB::table('event_user')->updateOrInsert(['user_id'=>$userId,'event_id'=>$event->id],
         ['state'=>'interested']);
         return response()->json(['message'=>'Event marked as interested'],200);
@@ -206,6 +261,11 @@ public function eventsByCharityName($charityName)
            return response()->json(['error'=>'event not exist'],404);
         }
         $userId=auth('user')->id();
+        $block=$this->blocked($event->charity_id,$user->id);
+        if($block){
+            return response()->json(['message'=>'access denial'],403);
+    
+        }
         // Insert into pivot table
         DB::table('event_user')->updateOrInsert(
             ['user_id' => $userId, 'event_id' => $event->id],

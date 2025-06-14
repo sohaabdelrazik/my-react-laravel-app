@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 use App\Models\Comment;
 use Illuminate\Http\Request;
 use Validator;
+use Illuminate\Support\Facades\DB;
+use App\Models\Event;
+
 class CommentsController extends Controller
 {
     /**
@@ -17,7 +20,16 @@ class CommentsController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+
+
+     public function blocked($charityId,$userId){
+        return DB::table('blockings')
+        ->where('user_id',$userId)
+        ->where('charity_id',$charityId)
+        ->exists();
+
+    }
+     public function store(Request $request)
     {    
         $charity=auth('charity')->user();
         $user=auth('user')->user();
@@ -46,16 +58,23 @@ class CommentsController extends Controller
             'content'=>$request->content,
             'event_id'=>$request->event_id,
         ]);
-        return response()->json(['message'=>'Event created successfully','comment'=>$comment->makeHidden(['charity_id','event_id','id','user_id','user_name','updated_at'])],200);
+        return response()->json(['message'=>'comment created successfully','comment'=>$comment->makeHidden(['charity_id','event_id','id','user_id','user_name','updated_at'])],200);
     }
         if($user){
+            $event=Event::where('id',$request->event_id)
+            ->first();
+            $block=$this->blocked($event->charity_id,$user->id);
+            if($block){
+                return response()->json(['message'=>'access denial'],403);
+        
+            }
         $comment=Comment::create([
             'user_id'=>$user->id,
             'user_name'=>$user->name,
             'content'=>$request->content,
             'event_id'=>$request->event_id,
         ]);
-        return response()->json(['message'=>'Event created successfully','comment'=>$comment->makeHidden(['user_id','event_id','id','charity_name','charity_id','updated_at'])],200);
+        return response()->json(['message'=>'comment created successfully','comment'=>$comment->makeHidden(['user_id','event_id','id','charity_name','charity_id','updated_at'])],200);
     }
     return response()->json(['error'=>'unauthorized'],422);
 }

@@ -49,6 +49,8 @@ Route::middleware('auth:user')->group(function () {
     Route::post('/events/interestedList', [EventsController::class, 'listInterestedEvents']);
     Route::post('/events/goingList', [EventsController::class, 'listGoingEvents']);});
 Route::get('/going/{eventId}/users', [EventsController::class, 'listGoingUsers']);
-Route::put('/update/event/{id}', [EventsController::class, 'update']);
-Route::get('/show/event/{id}', [EventsController::class,'show']);
+Route::put('/update/event/{eventId}', [EventsController::class, 'update']);
+Route::get('/show/event/{eventId}', [EventsController::class,'show']);
+Route::post('/block/user/{userId}', [EventsController::class, 'blockUser']);
+Route::post('/unblock/user/{userId}', [EventsController::class, 'unblockUser']);
 
