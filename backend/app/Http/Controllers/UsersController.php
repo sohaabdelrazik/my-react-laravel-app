@@ -115,4 +115,17 @@ class UsersController extends Controller
              return response()->json(['message'=>'User Profile',
              'user'=>$user->makeHidden(['password','id'])]);
         }
+        public function topRated(){
+            $user=auth('user')->user();
+            $charity=auth('charity')->user();
+            if(!$charity&&!$user){
+                return response()->json(['error'=>'unauthorized'],403);
+            }
+            $topRaters=User::orderByDesc('rate')
+            ->take(5)->select('name','rate')->get();
+            if(!$topRaters){
+                return response()->json(['message'=>'no users yet'],404);
+            }
+            return response()->json(['top users'=>$topRaters],201);
+        }
 }

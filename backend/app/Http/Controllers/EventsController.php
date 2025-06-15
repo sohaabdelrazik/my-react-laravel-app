@@ -279,9 +279,9 @@ public function eventsByCharityName($charityName)
     }
 
     // Function for verifying user attendance
-    public function verifyUserAttendance(Request $request)
+    public function verifyUserAttendance(Request $request,$userId)
     {       
-        $userId=auth('user')->id();
+        // $userId=auth('user')->id();
         $request->validate([
             'event_id' => 'required|exists:events,id',
         ]);

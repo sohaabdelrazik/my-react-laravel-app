@@ -24,6 +24,7 @@ Route::post('/login',[UsersController::class,'login']);
 Route::get('/dashboard',[UsersController::class,'dashboard']);
 Route::get('/logout',[UsersController::class,'logout']);
 Route::get('/profile/name/{name}', [UsersController::class, 'profile']);
+Route::get('/top-rated',[UsersController::class,'topRated']);
 
 Route::post('/charity/register',[CharitiesController::class,'register']);
 Route::post('/charity/login',[CharitiesController::class,'login']);
@@ -38,7 +39,7 @@ Route::put('/update/comment/{id}', [CommentsController::class, 'update']);
 Route::get('/show/comment/{id}', [CommentsController::class,'show']);
 
 Route::middleware(['auth:charity'])->get('/my-events', [EventsController::class, 'myEvents']);
-Route::post('/events/{eventId}/verified', [EventsController::class, 'verifyUserAttendance']);
+Route::post('/events/{userId}/verified', [EventsController::class, 'verifyUserAttendance']);
 Route::get('/all-events', [EventsController::class, 'allEvents']);
 Route::middleware(['auth:user'])->get('/charity-events/{charityName}', [EventsController::class, 'eventsByCharityName']);
 Route::middleware(['auth:charity'])->post('/charity/create/event', [EventsController::class, 'store']);
