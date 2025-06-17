@@ -126,6 +126,6 @@ class UsersController extends Controller
             if(!$topRaters){
                 return response()->json(['message'=>'no users yet'],404);
             }
-            return response()->json(['top users'=>$topRaters],201);
+            return response()->json(['top users'=>$topRaters],200);
         }
 }

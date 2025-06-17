@@ -281,7 +281,6 @@ public function eventsByCharityName($charityName)
     // Function for verifying user attendance
     public function verifyUserAttendance(Request $request,$userId)
     {       
-        // $userId=auth('user')->id();
         $request->validate([
             'event_id' => 'required|exists:events,id',
         ]);
@@ -320,4 +319,22 @@ public function eventsByCharityName($charityName)
             return response()->json(['message'=>'event deleted successfully'],201);
         
     }
+    public function topCharitiesByEvents()
+    {
+    $topCharities = Event::select('charity_id', DB::raw('COUNT(*) as total_events'))
+        ->groupBy('charity_id')
+        ->orderByDesc('total_events')
+        ->with('charity:id,name') 
+        ->limit(5)
+        ->get()
+        ->map(function ($event) {
+            return [
+                'charity_name' => $event->charity->name ?? 'Unknown',
+                'total_events' => $event->total_events,
+            ];
+        });
+
+    return response()->json(['top_charities' => $topCharities], 200);
+    }
+
 }

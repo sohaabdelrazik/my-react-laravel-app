@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Charity;
 
 class event extends Model
 {
@@ -20,5 +21,9 @@ class event extends Model
         'status',
         'location'
     ];
-    
+    public function charity()
+{
+    return $this->belongsTo(Charity::class);
+}
+
 }

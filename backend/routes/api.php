@@ -54,4 +54,5 @@ Route::put('/update/event/{eventId}', [EventsController::class, 'update']);
 Route::get('/show/event/{eventId}', [EventsController::class,'show']);
 Route::post('/block/user/{userId}', [EventsController::class, 'blockUser']);
 Route::post('/unblock/user/{userId}', [EventsController::class, 'unblockUser']);
+Route::get('/top-charities', [EventsController::class, 'topCharitiesByEvents']);
 
